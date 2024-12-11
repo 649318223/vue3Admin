@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getToken, setToken } from '../utils/token.js'
+import { ElMessage } from 'element-plus'
 // 创建一个 Axios 实例
 const server = axios.create({
   baseURL: '/', // 设置你的基础 URL
@@ -35,8 +36,11 @@ server.interceptors.response.use(
   error => {
     // 对响应错误做些什么
     if (error.response && error.response.status === 401) {
+      ElMessage.error('未授权，请先登录')
       // 处理未授权错误，例如重定向到登录页面
-      window.location.href = '/login'
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 1500)
     }
     return Promise.reject(error)
   }
