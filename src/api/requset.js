@@ -14,6 +14,9 @@ server.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    if (config.type === 'form') {
+      config.headers['Content-Type'] = 'multipart/form-data'
+    }
     return config
   },
   error => {
@@ -31,7 +34,8 @@ server.interceptors.response.use(
       // 更新 token
       setToken(authorization)
     }
-    return response
+    const { data } = response
+    return data
   },
   error => {
     // 对响应错误做些什么

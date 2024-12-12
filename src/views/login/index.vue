@@ -11,8 +11,6 @@
       </el-form>
       <el-button @click="signIn">登录</el-button>
     </el-card>
-    <el-button @click="get">按钮</el-button>
-    <el-button @click="getToken">token</el-button>
   </div>
 </template>
 

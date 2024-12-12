@@ -11,13 +11,14 @@
     "element-plus": "^2.9.0",
     "vue": "^3.2.8",
     "vue-router": "^4.5.0",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.6.0",
     "@vue/compiler-sfc": "^3.2.6",
-    "vite": "^2.5.2",
     "sass": "^1.77.8",
-    "sass-loader": "^14.2.1"
+    "sass-loader": "^14.2.1",
+    "vite": "^2.5.2"
   }
 }
