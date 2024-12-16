@@ -38,6 +38,7 @@ server.interceptors.response.use(
     return data
   },
   error => {
+    const { status, message } = error.response.data
     // 对响应错误做些什么
     if (error.response && error.response.status === 401) {
       ElMessage.error('未授权，请先登录')
@@ -45,6 +46,9 @@ server.interceptors.response.use(
       setTimeout(() => {
         window.location.href = '/login'
       }, 1500)
+    }
+    if (status === 500) {
+      ElMessage.error(message || '服务器错误')
     }
     return Promise.reject(error)
   }

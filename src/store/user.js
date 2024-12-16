@@ -5,7 +5,11 @@ const state = {
 
 const mutations = {
   set_userInfo(state, data) {
-    state.userInfo = data
+    console.log(data)
+    state.userInfo = {
+      ...state.userInfo,
+      ...data
+    }
   }
 }
 const actions = {
@@ -13,7 +17,6 @@ const actions = {
   async getUserInfo({ commit }) {
     const res = await getUserInfo()
     if (res.status === 200) {
-      console.log(res)
       commit('set_userInfo', res.data)
     }
   }

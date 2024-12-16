@@ -6,6 +6,7 @@ import './theme/index.scss'
 import router from './router'
 
 import store from './store'
+// store.dispatch('user/getUserInfo') // 获取用户信息
 const app = createApp(App)
 app.use(router)
 app.use(store)

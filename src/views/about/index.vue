@@ -6,7 +6,7 @@
           <div class="user-avatar">
             <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" alt="" />
           </div>
-          admin
+          {{ userInfo.userName }}
         </el-card>
       </el-col>
       <el-col :span="16">
@@ -36,10 +36,15 @@
 
 <script setup>
 import { Plus } from '@element-plus/icons-vue'
-import { reactive, ref } from 'vue'
+import { reactive, computed } from 'vue'
 import { updateApi } from '@/api/user'
 import { useStore } from 'vuex'
+import { ElMessage } from 'element-plus'
 const store = useStore()
+const userInfo = computed(() => {
+  return store.state.user.userInfo
+})
+console.log(userInfo)
 //data
 const form = reactive({
   userName: '',
@@ -47,16 +52,14 @@ const form = reactive({
   file: '',
   userAvatar: ''
 })
-console.log(store)
+
 //methods
 const update = () => {
-  console.log(form)
   const data = new FormData()
   for (const key in form) {
     data.append(key, form[key])
   }
   updateApi(data).then(res => {
-    console.log(res)
     if (res.status === 200) {
       store.dispatch('user/getUserInfo')
       ElMessage.success('更新成功')
