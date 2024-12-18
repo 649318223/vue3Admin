@@ -55,11 +55,12 @@ const form = reactive({
 
 //methods
 const update = () => {
-  const data = new FormData()
-  for (const key in form) {
-    data.append(key, form[key])
-  }
-  updateApi(data).then(res => {
+  // const data = new FormData()
+  // for (const key in form) {
+  //   data.append(key, form[key])
+  // }
+  console.log(form)
+  updateApi(form).then(res => {
     if (res.status === 200) {
       store.dispatch('user/getUserInfo')
       ElMessage.success('更新成功')
