@@ -16,3 +16,11 @@ export const addUserApi = data => {
     data
   })
 }
+//获取用户列表
+export const getListApi = data => {
+  return server({
+    url: 'admin/user/getList',
+    method: 'post',
+    data
+  })
+}

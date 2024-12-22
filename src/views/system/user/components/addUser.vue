@@ -15,7 +15,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="confirm">确认</el-button>
+          <el-button type="primary" @click="confirm($parent)">确认</el-button>
         </div>
       </template>
     </el-dialog>
@@ -42,13 +42,13 @@ const formData = reactive({
   userUpdateTime: '',
   desc: ''
 })
-//computed
 
 //methods
-const confirm = () => {
+const confirm = parent => {
   addUserApi(formData).then(res => {
     if (res.status === 200) {
       ElMessage.success(res.message)
+      parent.$parent.getTableList()
       closeDialog()
     }
   })
