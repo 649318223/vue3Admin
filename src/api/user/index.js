@@ -24,3 +24,11 @@ export const getListApi = data => {
     data
   })
 }
+//删除用户
+export const delUserApi = params => {
+  return server({
+    url: 'admin/user/delUser',
+    method: 'get',
+    params
+  })
+}

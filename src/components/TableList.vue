@@ -3,7 +3,7 @@
     <div class="table-header">
       <slot name="header" />
     </div>
-    <el-table :data="tableData">
+    <el-table :data="tableData" border>
       <template v-for="item in tableColumn" :key="item.prop">
         <el-table-column :prop="item.prop" :label="item.label" :width="item.width">
           <template #default="scope">
