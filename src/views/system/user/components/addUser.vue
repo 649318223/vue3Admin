@@ -50,12 +50,12 @@ const title = computed(() => {
 //methods
 const confirm = parent => {
   if (dialogType.value === 'add') {
-    addUser()
+    addUser(parent)
   } else {
     editUser()
   }
 }
-const addUser = () => {
+const addUser = parent => {
   addUserApi(formData).then(res => {
     if (res.status === 200) {
       ElMessage.success(res.message)

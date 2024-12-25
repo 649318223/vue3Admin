@@ -14,7 +14,7 @@
             </template>
           </el-sub-menu>
           <template v-else>
-            <el-menu-item :index="item.path">
+            <el-menu-item :index="item.path" :key="item.path">
               <el-icon><icon-menu /></el-icon>
               <span>{{ item?.meta?.title }}</span>
             </el-menu-item>

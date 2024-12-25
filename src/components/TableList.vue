@@ -17,20 +17,46 @@
         </el-table-column>
       </template>
     </el-table>
+    <div class="table-footer">
+      <el-pagination background v-model:current-page="page.pageNum" v-model:page-size="page.pageSize" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="page.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, reactive, defineEmits, computed } from 'vue'
 const prop = defineProps({
-  tableData: {
-    type: Array,
-    default: () => []
-  },
-  tableColumn: {
-    type: Array,
-    default: () => []
+  tableConfig: {
+    type: Object,
+    default: () => ({
+      tableData: [],
+      tableColumn: [],
+      border: true,
+      page: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0
+      }
+    })
   }
 })
+const tableData = computed(() => prop.tableConfig.tableData)
+const tableColumn = computed(() => prop.tableConfig.tableColumn)
+const pageConfig = computed(() => prop.tableConfig.page)
+console.log(prop.tableConfig)
+const emit = defineEmits(['handleSizeChange', 'handleCurrentChange'])
+const page = reactive({
+  pageNum: prop.tableConfig.page.pageNum,
+  pageSize: prop.tableConfig.page.pageSize,
+  total: prop.tableConfig.page.total
+})
+//methods
+const handleSizeChange = val => {
+  emit('handleSizeChange', val)
+}
+const handleCurrentChange = val => {
+  emit('handleCurrentChange', val)
+}
 </script>
 
 <style></style>

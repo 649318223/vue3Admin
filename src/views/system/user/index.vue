@@ -1,7 +1,7 @@
 <template>
   <div>
     用户列表
-    <TableList :tableData="tableConfig.tableData" :tableColumn="tableConfig.tableColumn">
+    <TableList :tableConfig="tableConfig" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange">
       <template #header>
         <el-button type="primary" @click="addUser">添加用户</el-button>
       </template>
@@ -30,7 +30,12 @@ const tableConfig = reactive({
     { label: '用户名', prop: 'userName' },
     { label: '手机号', prop: 'userPhone' },
     { label: '操作', prop: 'address', type: 'slot', slotName: 'operation' }
-  ]
+  ],
+  page: {
+    pageNum: 1,
+    pageSize: 10,
+    total: 0
+  }
 })
 
 //methods
@@ -38,10 +43,21 @@ const initData = () => {
   getTableList()
 }
 const getTableList = async () => {
-  const res = await getListApi()
+  const data = { pageNum: tableConfig.page.pageNum, pageSize: tableConfig.page.pageSize }
+  const res = await getListApi(data)
   if (res.status === 200) {
     tableConfig.tableData = res.data
+    tableConfig.page.total = res.total
   }
+}
+const handleCurrentChange = val => {
+  tableConfig.page.pageNum = val
+  getTableList()
+}
+const handleSizeChange = val => {
+  tableConfig.page.pageNum = 1
+  tableConfig.page.pageSize = val
+  getTableList()
 }
 // 添加用户
 const addUser = () => {

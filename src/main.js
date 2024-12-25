@@ -6,9 +6,10 @@ import './theme/index.scss'
 import router from './router'
 
 import store from './store'
+import locale from 'element-plus/es/locale/lang/zh-cn'
 // store.dispatch('user/getUserInfo') // 获取用户信息
 const app = createApp(App)
 app.use(router)
 app.use(store)
-app.use(ElementPlus)
+app.use(ElementPlus, { locale })
 app.mount('#app')
