@@ -3,7 +3,7 @@
     <div class="table-header">
       <slot name="header" />
     </div>
-    <el-table :data="tableData" border>
+    <el-table :data="tableData" :border="border">
       <template v-for="item in tableColumn" :key="item.prop">
         <el-table-column :prop="item.prop" :label="item.label" :width="item.width">
           <template #default="scope">
@@ -18,38 +18,28 @@
       </template>
     </el-table>
     <div class="table-footer">
-      <el-pagination background v-model:current-page="page.pageNum" v-model:page-size="page.pageSize" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="page.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+      <el-pagination background v-model:current-page="pageConfig.pageNum" v-model:page-size="pageConfig.pageSize" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="pageConfig.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, defineEmits, computed } from 'vue'
+import { defineEmits, computed } from 'vue'
 const prop = defineProps({
   tableConfig: {
     type: Object,
-    default: () => ({
-      tableData: [],
-      tableColumn: [],
-      border: true,
-      page: {
-        pageNum: 1,
-        pageSize: 10,
-        total: 0
-      }
-    })
+    default: () => {}
   }
 })
-const tableData = computed(() => prop.tableConfig.tableData)
-const tableColumn = computed(() => prop.tableConfig.tableColumn)
-const pageConfig = computed(() => prop.tableConfig.page)
-console.log(prop.tableConfig)
+
+//列表配置信息
+const { tableConfig } = prop
+const tableData = computed(() => tableConfig.tableData || [])
+const tableColumn = computed(() => tableConfig.tableColumn || [])
+const border = computed(() => (tableConfig.border || tableConfig.border === undefined ? true : false))
+const pageConfig = computed(() => tableConfig.page || { pageNum: 1, pageSize: 10, total: 0 })
+
 const emit = defineEmits(['handleSizeChange', 'handleCurrentChange'])
-const page = reactive({
-  pageNum: prop.tableConfig.page.pageNum,
-  pageSize: prop.tableConfig.page.pageSize,
-  total: prop.tableConfig.page.total
-})
 //methods
 const handleSizeChange = val => {
   emit('handleSizeChange', val)
