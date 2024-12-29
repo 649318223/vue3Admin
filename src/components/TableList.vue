@@ -1,42 +1,59 @@
 <template>
-  <div>
+  <div class="table-list">
     <div class="table-header">
       <slot name="header" />
     </div>
-    <el-table :data="tableData" :border="border">
-      <template v-for="item in tableColumn" :key="item.prop">
-        <el-table-column :prop="item.prop" :label="item.label" :width="item.width">
-          <template #default="scope">
-            <div v-if="item.type === 'slot'">
-              <slot :name="item.slotName" :scope="{ row: scope.row, column: scope.column, $index: scope.$index }"></slot>
-            </div>
-            <div v-else>
-              {{ scope.row[item.prop] }}
-            </div>
-          </template>
-        </el-table-column>
-      </template>
-    </el-table>
+    <div ref="tableContainer" class="table-content">
+      <el-table :data="tableData" :height="tableHeight" :border="border">
+        <template v-for="item in tableColumn" :key="item.prop">
+          <el-table-column :prop="item.prop" :label="item.label" :width="item.width">
+            <template #default="scope">
+              <div v-if="item.type === 'slot'">
+                <slot
+                  :name="item.slotName"
+                  :scope="{ row: scope.row, column: scope.column, $index: scope.$index }"
+                ></slot>
+              </div>
+              <div v-else>
+                {{ scope.row[item.prop] }}
+              </div>
+            </template>
+          </el-table-column>
+        </template>
+      </el-table>
+    </div>
     <div class="table-footer">
-      <el-pagination background v-model:current-page="pageConfig.pageNum" v-model:page-size="pageConfig.pageSize" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper" :total="pageConfig.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+      <el-pagination
+        background
+        v-model:current-page="pageConfig.pageNum"
+        v-model:page-size="pageConfig.pageSize"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="pageConfig.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, computed } from 'vue'
+import { ref, defineEmits, computed, onMounted, onUnmounted } from 'vue'
 const prop = defineProps({
   tableConfig: {
     type: Object,
     default: () => {}
   }
 })
-
+const tableContainer = ref(null)
+const tableHeight = ref(0)
 //列表配置信息
 const { tableConfig } = prop
 const tableData = computed(() => tableConfig.tableData || [])
 const tableColumn = computed(() => tableConfig.tableColumn || [])
-const border = computed(() => (tableConfig.border || tableConfig.border === undefined ? true : false))
+const border = computed(() =>
+  tableConfig.border || tableConfig.border === undefined ? true : false
+)
 const pageConfig = computed(() => tableConfig.page || { pageNum: 1, pageSize: 10, total: 0 })
 
 const emit = defineEmits(['handleSizeChange', 'handleCurrentChange'])
@@ -47,6 +64,45 @@ const handleSizeChange = val => {
 const handleCurrentChange = val => {
   emit('handleCurrentChange', val)
 }
+//计算表格自适应高度
+const calculateHeight = () => {
+  if (tableContainer.value) {
+    // 计算表格的高度
+    const containerRect = tableContainer.value.getBoundingClientRect()
+    const containerHeight = containerRect.height
+    tableHeight.value = containerHeight
+  }
+}
+// 监听窗口大小变化
+const handleResize = () => {
+  calculateHeight()
+}
+onMounted(() => {
+  calculateHeight() // 初始化时计算一次高度
+  window.addEventListener('resize', handleResize)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.table-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .table-header {
+    padding-bottom: 12px;
+    text-align: left;
+  }
+  .table-content {
+    overflow: auto;
+    flex: 1;
+  }
+  .table-footer {
+    padding-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+</style>

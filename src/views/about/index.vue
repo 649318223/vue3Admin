@@ -4,9 +4,9 @@
       <el-col :span="8">
         <el-card>
           <div class="user-avatar">
-            <img src="https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg" alt="" />
+            <img :src="userAvatar" alt="" />
           </div>
-          {{ userInfo.userName }}
+          <div class="user-name">{{ userInfo.userName }} 欢迎登录！！！</div>
         </el-card>
       </el-col>
       <el-col :span="16">
@@ -19,10 +19,7 @@
               <el-input v-model="form.desc" />
             </el-form-item>
             <el-form-item label="头像">
-              <el-upload class="avatar-uploader" action="/" :show-file-list="false" :on-change="handleChange" :before-upload="beforeAvatarUpload">
-                <img v-if="form.userAvatar" :src="form.userAvatar" class="avatar" />
-                <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-              </el-upload>
+              <Upload v-model:url="form.userAvatar" />
             </el-form-item>
             <el-form-item>
               <el-button @click="update" type="primary">更新</el-button>
@@ -35,48 +32,42 @@
 </template>
 
 <script setup>
-import { Plus } from '@element-plus/icons-vue'
-import { reactive, computed } from 'vue'
-import { updateApi } from '@/api/user'
+import { reactive, computed, defineAsyncComponent } from 'vue'
+import { updataUserApi } from '@/api/user'
 import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
+const Upload = defineAsyncComponent(() => import('@/components/Upload/imgUpload.vue'))
 const store = useStore()
+//computed
+const userAvatar = computed(() => {
+  if (userInfo.value.userAvatar) {
+    return `http://localhost:3000/${userInfo.value.userAvatar}`
+  }
+  return 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg'
+})
 const userInfo = computed(() => {
   return store.state.user.userInfo
 })
-console.log(userInfo)
+
 //data
 const form = reactive({
-  userName: '',
-  desc: '',
-  file: '',
-  userAvatar: ''
+  userName: userInfo.value.userName || '',
+  desc: userInfo.value.desc || '',
+  userAvatar: userInfo.value.userAvatar || ''
 })
 
 //methods
 const update = () => {
-  // const data = new FormData()
-  // for (const key in form) {
-  //   data.append(key, form[key])
-  // }
-  console.log(form)
-  updateApi(form).then(res => {
+  const data = {
+    ...form,
+    id: userInfo.value._id
+  }
+  updataUserApi(data).then(res => {
     if (res.status === 200) {
       store.dispatch('user/getUserInfo')
       ElMessage.success('更新成功')
     }
   })
-}
-const handleChange = file => {
-  form.userAvatar = URL.createObjectURL(file.raw)
-  form.file = file.raw
-}
-
-const beforeAvatarUpload = rawFile => {
-  console.log(rawFile)
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('Avatar picture must be JPG format!')
-  }
 }
 </script>
 
@@ -87,37 +78,11 @@ const beforeAvatarUpload = rawFile => {
     height: 100px;
     border-radius: 50%;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin: 0 auto;
     img {
       width: 100%;
       height: 100%;
     }
   }
-}
-.avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-  border: 1px dashed var(--el-border-color);
-}
-.avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
 }
 </style>

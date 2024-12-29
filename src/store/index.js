@@ -12,13 +12,13 @@ const store = createStore({
   getters,
   plugins: [
     createPersistedState({
-      key: 'userInfo', // 存数据的key名   自定义的  要有语义化
+      key: 'userInfo' // 存数据的key名   自定义的  要有语义化
       // paths: ['user'] // 要把那些模块加入缓存
-      reducer(modules) {
-        return {
-          userInfo: modules.user.userInfo
-        }
-      }
+      // reducer(modules) {
+      //   return {
+      //     userInfo: modules.user.userInfo
+      //   }
+      // }
     })
   ]
 })

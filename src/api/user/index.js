@@ -1,11 +1,10 @@
 import server from '../requset'
 
-export const updateApi = data => {
+export const updataUserApi = data => {
   return server({
-    url: 'admin/user/update',
+    url: 'admin/user/updataUser',
     method: 'post',
-    data,
-    type: 'form'
+    data
   })
 }
 //添加用户

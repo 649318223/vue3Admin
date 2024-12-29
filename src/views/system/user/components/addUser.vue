@@ -11,6 +11,12 @@
         <el-form-item label="手机号" prop="userPhone">
           <el-input v-model="formData.userPhone" />
         </el-form-item>
+        <el-form-item label="头像" prop="userAvatar">
+          <Upload v-model:url="formData.userAvatar" />
+        </el-form-item>
+        <el-form-item label="说明" prop="desc">
+          <el-input v-model="formData.desc" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -23,9 +29,11 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, nextTick } from 'vue'
+import { computed, reactive, ref, nextTick, defineAsyncComponent } from 'vue'
 import { ElMessage } from 'element-plus'
-import { addUserApi } from '@/api/user'
+import { addUserApi, updataUserApi } from '@/api/user'
+const Upload = defineAsyncComponent(() => import('@/components/Upload/imgUpload.vue'))
+
 const formRef = ref(null)
 //data
 const vsible = ref(false)
@@ -48,40 +56,32 @@ const title = computed(() => {
   return dialogType.value === 'add' ? '添加用户' : '编辑用户'
 })
 //methods
-const confirm = parent => {
+const confirm = async parent => {
+  let res = {}
+  const data = { ...formData }
+  data.id = formData._id
+  delete data._id
   if (dialogType.value === 'add') {
-    addUser(parent)
+    data.id = ''
+    res = await addUserApi(data)
   } else {
-    editUser()
+    res = await updataUserApi(data)
+  }
+  console.log(data)
+  if (res.status === 200) {
+    ElMessage.success(res.message)
+    parent.$parent.getTableList()
+    closeDialog()
   }
 }
-const addUser = parent => {
-  addUserApi(formData).then(res => {
-    if (res.status === 200) {
-      ElMessage.success(res.message)
-      parent.$parent.getTableList()
-      closeDialog()
-    }
-  })
-}
-const editUser = () => {
-  addUserApi(formData).then(res => {
-    if (res.status === 200) {
-      ElMessage.success(res.message)
-      parent.$parent.getTableList()
-      closeDialog()
-    }
-  })
-}
+
 const openDialog = (type, data) => {
   dialogType.value = type
   vsible.value = true
   nextTick(() => {
     formRef.value.resetFields()
     if (type === 'edit') {
-      formData.userName = data.userName
-      formData.userPhone = data.userPhone
-      formData.desc = data.desc
+      Object.assign(formData, data)
     }
   })
 }

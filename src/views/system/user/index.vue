@@ -1,9 +1,17 @@
 <template>
-  <div>
-    用户列表
-    <TableList :tableConfig="tableConfig" @handleCurrentChange="handleCurrentChange" @handleSizeChange="handleSizeChange">
+  <div class="user-list">
+    <TableList
+      :tableConfig="tableConfig"
+      @handleCurrentChange="handleCurrentChange"
+      @handleSizeChange="handleSizeChange"
+    >
       <template #header>
         <el-button type="primary" @click="addUser">添加用户</el-button>
+      </template>
+      <template #userAvatar="{ scope }">
+        <div class="userAvatar">
+          <img :src="userAvatarUrl(scope.row)" />
+        </div>
       </template>
       <template #operation="{ scope }">
         <el-button type="primary" @click="editUser(scope)">编辑</el-button>
@@ -15,7 +23,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, ref, reactive } from 'vue'
+import { defineAsyncComponent, ref, reactive, computed } from 'vue'
 import { ElMessageBox, ElMessage } from 'element-plus'
 //components
 const TableList = defineAsyncComponent(() => import('@/components/TableList.vue'))
@@ -29,6 +37,8 @@ const tableConfig = reactive({
   tableColumn: [
     { label: '用户名', prop: 'userName' },
     { label: '手机号', prop: 'userPhone' },
+    { label: '头像', prop: 'userAvatar', type: 'slot', slotName: 'userAvatar', width: 100 },
+    { label: '说明', prop: 'desc' },
     { label: '操作', prop: 'address', type: 'slot', slotName: 'operation' }
   ],
   page: {
@@ -37,7 +47,14 @@ const tableConfig = reactive({
     total: 0
   }
 })
-
+const userAvatarUrl = computed(() => {
+  return row => {
+    console.log(row)
+    return row.userAvatar
+      ? `http://localhost:3000/${row.userAvatar}`
+      : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+  }
+})
 //methods
 const initData = () => {
   getTableList()
@@ -95,4 +112,17 @@ defineExpose({
 })
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.user-list {
+  .userAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+</style>
